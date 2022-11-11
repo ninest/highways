@@ -78,6 +78,9 @@ const useGame = () => {
   };
 
   const submitAnswer = () => {
+    if (!selectedCity) {
+      return;
+    }
     if (selectedCity === currentQuestion.city) {
       setScore(score + 1);
     }
@@ -157,9 +160,9 @@ export const Game = () => {
               </li>
             ))}
           </ul>
-        <button className="underline" onClick={submitAnswer}>
-          Submit
-        </button>
+          <button className="underline" onClick={submitAnswer}>
+            Submit
+          </button>
         </div>
       </div>
     </div>
