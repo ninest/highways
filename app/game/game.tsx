@@ -70,8 +70,6 @@ const useGame = () => {
     let newQuestion = getRandomHighway();
     setCurrentQuestion(newQuestion);
 
-    console.log("left");
-
     setDone([...done, newQuestion]);
   };
 
@@ -133,33 +131,37 @@ export const Game = () => {
 
       <p>Where is this interchange located?</p>
 
-      <div className="rounded-md overflow-hidden">
-        <img src={image} />
+      <div className="flex flex-col md:flex-row gap-5 md:gap-10">
+        <div className="rounded-md overflow-hidden">
+          <img src={image} />
+        </div>
+
+        <div className="flex-initial w-[850px]  space-y-2">
+          <ul className="list-disc list-inside">
+            {[...wrongOptions, currentQuestion.city].map((option) => (
+              <li key={option.city + option.state}>
+                <button
+                  className={clsx({
+                    "font-bold": selectedCity === option,
+                    "text-green-600":
+                      roundEnd && option == currentQuestion.city,
+                    "text-red-500":
+                      roundEnd &&
+                      option == selectedCity &&
+                      selectedCity != currentQuestion.city,
+                  })}
+                  onClick={() => selectAnswer(option)}
+                >
+                  {option.city}, {option.state}
+                </button>
+              </li>
+            ))}
+          </ul>
+        <button className="underline" onClick={submitAnswer}>
+          Submit
+        </button>
+        </div>
       </div>
-
-      <ul className="list-disc list-inside">
-        {[...wrongOptions, currentQuestion.city].map((option) => (
-          <li key={option.city + option.state}>
-            <button
-              className={clsx({
-                "font-bold": selectedCity === option,
-                "text-green-600": roundEnd && option == currentQuestion.city,
-                "text-red-500":
-                  roundEnd &&
-                  option == selectedCity &&
-                  selectedCity != currentQuestion.city,
-              })}
-              onClick={() => selectAnswer(option)}
-            >
-              {option.city}, {option.state}
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      <button className="underline" onClick={submitAnswer}>
-        Submit
-      </button>
     </div>
   );
 };
