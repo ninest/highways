@@ -60,12 +60,19 @@ const useGame = () => {
   const [done, setDone] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
 
+  const [roundEnd, setRoundEnded] = useState(false);
+
   const nextRound = () => {
     // Reset
     setSelectedCity(null);
+    setRoundEnded(false);
 
-    if (currentQuestion) setDone([...done, currentQuestion]);
-    setCurrentQuestion(getRandomHighway());
+    let newQuestion = getRandomHighway();
+    setCurrentQuestion(newQuestion);
+
+    console.log("left");
+
+    setDone([...done, newQuestion]);
   };
 
   const selectAnswer = (option: City) => {
@@ -76,7 +83,9 @@ const useGame = () => {
     if (selectedCity === currentQuestion.city) {
       setScore(score + 1);
     }
-    nextRound();
+    setRoundEnded(true);
+    // Set rounded ended to false in a few seconds, and go to next round
+    setTimeout(() => nextRound(), 1000);
   };
 
   return {
@@ -87,6 +96,7 @@ const useGame = () => {
     selectedCity,
     submitAnswer,
     score,
+    roundEnd,
   };
 };
 
@@ -99,6 +109,7 @@ export const Game = () => {
     selectedCity,
     submitAnswer,
     score,
+    roundEnd,
   } = useGame();
 
   useEffect(() => {
@@ -117,7 +128,7 @@ export const Game = () => {
     <div className="space-y-2">
       <div className="flex justify-between">
         <div className="font-bold">Round {roundNum}</div>
-        <div>{score}</div>
+        <div>Score {score}</div>
       </div>
 
       <p>Where is this interchange located?</p>
@@ -128,10 +139,15 @@ export const Game = () => {
 
       <ul className="list-disc list-inside">
         {[...wrongOptions, currentQuestion.city].map((option) => (
-          <li>
+          <li key={option.city + option.state}>
             <button
               className={clsx({
                 "font-bold": selectedCity === option,
+                "text-green-600": roundEnd && option == currentQuestion.city,
+                "text-red-500":
+                  roundEnd &&
+                  option == selectedCity &&
+                  selectedCity != currentQuestion.city,
               })}
               onClick={() => selectAnswer(option)}
             >
